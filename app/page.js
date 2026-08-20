@@ -23,9 +23,16 @@ export default function Page() {
     // 3 cortes REAIS com tempo real do video
     // O player do YouTube vai abrir EXATAMENTE nesse tempo, é corte REAL
     setCuts([
-      { t: "🔥 GANCHO VIRAL - 0:00", start: 0, end: 35 },
-      { t: "💡 MELHOR MOMENTO - MEIO", start: 60, end: 95 },
-      { t: "🚀 FINAL - 35s finais", start: 0, end: 0, isFinal: true }
+      { t: "🔥 CORTE 1 - GANCHO VIRAL - 0:00", start: 0, end: 35 },
+{ t: "💣 CORTE 2 - 0:40", start: 40, end: 75 },
+{ t: "⚡ CORTE 3 - 1:30", start: 90, end: 125 },
+{ t: "🚀 CORTE 4 - 2:15", start: 135, end: 170 },
+{ t: "💥 CORTE 5 - 3:00", start: 180, end: 215 },
+{ t: "🎯 CORTE 6 - 3:50", start: 230, end: 265 },
+{ t: "🔥 CORTE 7 - 4:40", start: 280, end: 315 },
+{ t: "💣 CORTE 8 - 5:30", start: 330, end: 365 },
+{ t: "⚡ CORTE 9 - 6:20", start: 380, end: 415 },
+{ t: "🏁 CORTE 10 - FINAL", start: 0, end: 0, isFinal: true }
     ]);
     setLoading(false);
   }
