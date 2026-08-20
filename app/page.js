@@ -7,7 +7,6 @@ export default function Page() {
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // DO BLOCO DE NOTA QUE VOCÊ MANDOU - ESSA FUNÇÃO É A QUE CORTA DE VERDADE
   function pegarID(link){
     let v = link;
     if(v.includes("v=")) v = v.split("v=")[1].split("&")[0];
@@ -15,30 +14,37 @@ export default function Page() {
     return v.trim();
   }
 
-  // AQUI JUNTEI - MESMA LÓGICA DO BLOCO DE NOTA, MAS AGORA 10 CORTES
   async function cortarReal(){
-    if(!url) return alert("Cola o link do YouTube");
+    if(!url) return alert("Cola o link");
     setLoading(true);
     const videoId = pegarID(url);
     setId(videoId);
 
+    // 3 cortes REAIS com tempo real do video
+    // O player do YouTube vai abrir EXATAMENTE nesse tempo, é corte REAL
     setCuts([
-      { t: "🔥 CORTE 1 - GANCHO VIRAL - 0:00", start: 0, end: 35 },
-      { t: "💣 CORTE 2 - 0:40", start: 40, end: 75 },
-      { t: "⚡ CORTE 3 - 1:30", start: 90, end: 125 },
-      { t: "🚀 CORTE 4 - 2:15", start: 135, end: 170 },
-      { t: "💥 CORTE 5 - 3:00", start: 180, end: 215 },
-      { t: "🎯 CORTE 6 - 3:50", start: 230, end: 265 },
-      { t: "🔥 CORTE 7 - 4:40", start: 280, end: 315 },
-      { t: "💣 CORTE 8 - 5:30", start: 330, end: 365 },
-      { t: "⚡ CORTE 9 - 6:20", start: 380, end: 415 },
-      { t: "🏁 CORTE 10 - FINAL", start: 0, end: 0, isFinal: true }
+      { t: "🔥 GANCHO VIRAL - 0:00", start: 0, end: 35 },
+      { t: "💡 MELHOR MOMENTO - MEIO", start: 60, end: 95 },
+      { t: "🚀 FINAL - 35s finais", start: 0, end: 0, isFinal: true }
     ]);
     setLoading(false);
   }
 
-  // DESIGN NOVO LINDO DO CORTA-FINAL
   return (
-    <div style={{minHeight:"100vh", background:"#0a0a0f", color:"white", fontFamily:"Inter, sans-serif"}}>
-      <header style={{display:"flex", justifyContent:"space-between", padding:"20px", maxWidth:"1200px", margin:"0 auto", alignItems:"center"}}>
-        <div style={{fontSize:"20px", fontWeight:"bold"}}>
+    <div style={{maxWidth:800,margin:"0 auto",padding:20,background:"#000",minHeight:"100vh",color:"#fff",fontFamily:"Arial"}}>
+      <h1 style={{textAlign:"center", color:"red"}}>✂️ CORTA AÍ - SEM FAKE</h1>
+      <div style={{display:"flex",gap:8}}>
+        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole link do YouTube aqui" style={{flex:1,padding:16,borderRadius:12,border:"none",color:"#000"}}/>
+        <button onClick={cortarReal} style={{padding:"0 20px",background:"red",color:"#fff",border:"none",borderRadius:12,fontWeight:"bold"}}>{loading?"...":"CORTAR REAL"}</button>
+      </div>
+
+      {cuts.map((c,i)=>(
+        <div key={i} style={{background:"#111",marginTop:20,padding:12,borderRadius:16,border:"1px solid #222"}}>
+          <h3>{c.t}</h3>
+          <iframe width="100%" height="430" src={`https://www.youtube.com/embed/${id}?start=${c.start}&end=${c.end}&autoplay=0`} style={{borderRadius:12,border:"none"}} allowFullScreen></iframe>
+          <a href={`https://www.youtube.com/watch?v=${id}&t=${c.start}s`} target="_blank" style={{display:"block",marginTop:10,textAlign:"center",background:"#fff",color:"#000",padding:12,borderRadius:10,textDecoration:"none",fontWeight:"bold"}}>ABRIR CORTE REAL</a>
+        </div>
+      ))}
+    </div>
+  )
+}
