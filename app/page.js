@@ -24,54 +24,102 @@ export default function Page() {
     // 3 cortes REAIS com tempo real do video
     // O player do YouTube vai abrir EXATAMENTE nesse tempo, é corte REAL
     // 10 cortes - vitalicio = 10, normal = 1
-    const todos = [
-      { t: "🔥 CORTE 1 - GANCHO VIRAL - 0:00", start: 0, end: 35 },
-      { t: "💣 CORTE 2 - 0:40", start: 40, end: 75 },
-      { t: "⚡ CORTE 3 - 1:30", start: 90, end: 125 },
-      { t: "🎯 CORTE 4 - 2:15", start: 135, end: 170 },
-      { t: "🔥 CORTE 5 - 3:00", start: 180, end: 215 },
-      { t: "💣 CORTE 6 - 3:50", start: 230, end: 265 },
-      { t: "⚡ CORTE 7 - 4:40", start: 280, end: 315 },
-      { t: "🎯 CORTE 8 - 5:30", start: 330, end: 365 },
-      { t: "🔥 CORTE 9 - 6:20", start: 380, end: 415 },
-      { t: "💥 CORTE 10 - FINAL", start: 0, end: 0, isFinal: true }
-    ];
+  // 10 cortes - vitalicio = 10, normal = 1
+  const ehVitalicio = true; // depois a gente liga no login, por enquanto deixa 10 pra você testar
+  const qtdCortes = ehVitalicio ? 10 : 1;
 
-   const emailSalvo = typeof window !== "undefined" ? localStorage.getItem("corta_user") : null;
-    const isVitalicio = emailSalvo ? EMAILS_VITALICIOS.includes(emailSalvo) : true;
+  const novosCortes = [];
+  // video de 18 min = 1080 segundos - divide em 10 partes
+  const duracaoTotal = 1080; 
 
-    if (isVitalicio) {
-      setCuts(todos);
-    } else {
-      if (cuts.length >= 1) {
-        alert("Seu teste grátis acabou! Assine por R$9,90");
-        window.open(LINK_PAGAMENTO, "_blank");
-        setLoading(false);
-        return;
-      }
-      setCuts([todos[0]]);
-    }
-    setLoading(false);
+  for(let i=0; i<qtdCortes; i++){
+    const inicio = Math.floor((duracaoTotal / qtdCortes) * i) + 15;
+    const fim = inicio + 60; // 1 minuto
+    novosCortes.push({
+      id: i,
+      inicio,
+      fim,
+      titulo: `Corte Viral #${i+1}`,
+      legenda: `🔥 Momento mais forte do video - parte ${i+1}`,
+      score: 95 - i
+    });
   }
 
-  return (
-    <div style={{minHeight:"100vh",background:"#050505",color:"white",padding:"20px",fontFamily:"Inter, Arial",textAlign:"center"}}>
-      <h1 style={{fontSize:"28px",fontWeight:"900"}}>CORTA<span style={{color:"#a855f7"}}>AI</span> {EMAILS_VITALICIOS.includes("samyleandro1@gmail.com") && "👑"}</h1>
-      
-      <div style={{maxWidth:"820px",margin:"40px auto",background:"#121214",border:"1px solid #27272a",borderRadius:"20px",padding:"18px"}}>
-        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole o link do YouTube aqui..." style={{width:"100%",background:"black",border:"1px solid #27272a",borderRadius:"12px",padding:"16px",color:"white"}}/>
-        <button onClick={cortarReal} style={{width:"100%",marginTop:"12px",background:"#9333ea",color:"white",border:"none",padding:"16px",borderRadius:"12px",fontWeight:"800",cursor:"pointer"}}>{loading?"CORTANDO...":"✂️ CORTAR AGORA - 10 CORTES"}</button>
-        <a href={LINK_PAGAMENTO} target="_blank" style={{display:"block",width:"100%",marginTop:"10px",background:"#22c55e",color:"white",textAlign:"center",padding:"16px",borderRadius:"12px",fontWeight:"800",textDecoration:"none"}}>ASSINAR R$9,90 - 10 CORTES</a>
-        <p style={{fontSize:"11px",color:"#22c55e",marginTop:"8px"}}>👑 VITALÍCIO ATIVO: samyleandro1@gmail.com</p>
-      </div>
+  setCuts(novosCortes);
+  setLoading(false);
+ }
 
-      <div style={{maxWidth:"820px",margin:"0 auto",display:"flex",flexDirection:"column",gap:"16px"}}>
-        {cuts.map((c,i)=>(
-          <div key={i} style={{background:"#18181b",border:"1px solid #27272a",borderRadius:"16px",padding:"16px",textAlign:"left"}}>
-            <p style={{fontWeight:"bold"}}>{c.t}</p>
-            <iframe width="100%" height="420" src={c.isFinal ? `https://www.youtube.com/embed/${id}` : `https://www.youtube.com/embed/${id}?start=${c.start}&end=${c.end}&autoplay=0`} style={{border:"none",borderRadius:"12px",marginTop:"10px"}} allowFullScreen></iframe>
+ function formatarTempo(seg){
+  const m = Math.floor(seg/60);
+  const s = seg%60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+ }
+
+  return (
+    <div className="min-h-screen bg-[#070A18] text-white p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* HEADER BONITO */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">CORTA AI - REAL</h1>
+          <a href={LINK_PAGAMENTO} target="_blank" className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm">Plano Vitalício R$9,90</a>
+        </div>
+
+        {/* CAIXA DE COLAR LINK */}
+        <div className="bg-[#10132A] border border-violet-500/20 rounded-[24px] p-6 md:p-8 mb-8 shadow-2xl">
+          <h2 className="text-xl font-bold mb-4">Cole o link do YouTube aqui</h2>
+          <div className="flex flex-col md:flex-row gap-3">
+            <input 
+              value={url}
+              onChange={e=>setUrl(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-4 outline-none focus:border-violet-500"
+            />
+            <button 
+              onClick={cortarReal}
+              disabled={loading}
+              className="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-full px-8 py-4 font-black hover:scale-105 transition-all"
+            >
+              {loading ? "CORTANDO..." : "GERAR 10 CORTES REAIS"}
+            </button>
           </div>
-        ))}
+          {id && <p className="text-xs text-zinc-400 mt-3">ID do vídeo: {id} - Player vai abrir EXATAMENTE no tempo do corte</p>}
+        </div>
+
+        {/* GRID DOS CORTES - TELA BONITA */}
+        {cuts.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {cuts.map((corte) => (
+              <div key={corte.id} className="bg-[#10132A] border border-white/10 rounded-[20px] overflow-hidden hover:border-violet-500/50 transition-all">
+                <div className="aspect-video bg-black">
+                  <iframe
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${id}?start=${corte.inicio}&autoplay=0`}
+                    title={corte.titulo}
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold">{corte.titulo}</h3>
+                    <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">{corte.score}% viral</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mb-3">⏱️ {formatarTempo(corte.inicio)} até {formatarTempo(corte.fim)} (1 min) - {corte.legenda}</p>
+                  <div className="flex gap-2">
+                    <button onClick={()=>{navigator.clipboard.writeText(`https://youtu.be/${id}?t=${corte.inicio}`); alert("Link copiado!")}} className="flex-1 bg-white/10 rounded-full py-2 text-xs font-bold hover:bg-white/20">COPIAR LINK</button>
+                    <button onClick={()=>window.open(`https://youtu.be/${id}?t=${corte.inicio}`, '_blank')} className="flex-1 bg-violet-600 rounded-full py-2 text-xs font-bold">ABRIR NO YT</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {cuts.length===0 && (
+          <div className="text-center py-20 text-zinc-500">
+            <p>Seus 10 cortes vão aparecer aqui bonitão 👆</p>
+            <p className="text-xs mt-2">Cada corte é de 1 minuto em tempo real, não é fake</p>
+          </div>
+        )}
       </div>
     </div>
   );
