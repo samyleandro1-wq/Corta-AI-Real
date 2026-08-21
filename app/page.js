@@ -37,19 +37,21 @@ export default function Page() {
     setLoading(false);
   }
 
-  return (
-    <div style={{maxWidth:800,margin:"0 auto",padding:20,background:"#000",minHeight:"100vh",color:"#fff",fontFamily:"Arial"}}>
-      <h1 style={{textAlign:"center", color:"red"}}>✂️ CORTA AÍ - SEM FAKE</h1>
-      <div style={{display:"flex",gap:8}}>
-        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole link do YouTube aqui" style={{flex:1,padding:16,borderRadius:12,border:"none",color:"#000"}}/>
-        <button onClick={cortarReal} style={{padding:"0 20px",background:"red",color:"#fff",border:"none",borderRadius:12,fontWeight:"bold"}}>{loading?"...":"CORTAR REAL"}</button>
+ return (
+    <div style={{maxWidth:800,margin:"0 auto",padding:20,background:"#050505",minHeight:"100vh",color:"#fff",fontFamily:"Arial"}}>
+      <h1 style={{textAlign:"center",fontSize:"42px",fontWeight:"900",marginTop:"20px"}}>CORTA<span style={{color:"#a855f7"}}>AI</span> <span style={{fontSize:"12px",background:"#9333ea",padding:"4px 10px",borderRadius:"20px",marginLeft:"8px"}}>REAL</span></h1>
+      <p style={{textAlign:"center",color:"#a1a1aa",marginBottom:"24px"}}>Cortes reais que abrem no tempo EXATO do vídeo • 10 cortes</p>
+
+      <div style={{display:"flex",gap:8,background:"#18181b",border:"1px solid #27272a",padding:"16px",borderRadius:"16px"}}>
+        <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole link do YouTube aqui" style={{flex:1,padding:16,borderRadius:12,border:"1px solid #27272a",background:"black",color:"white",outline:"none"}}/>
+        <button onClick={cortarReal} style={{padding:"0 28px",background:"#9333ea",color:"#fff",border:"none",borderRadius:12,fontWeight:"bold",cursor:"pointer"}}>{loading?"...":"CORTAR REAL"}</button>
       </div>
 
       {cuts.map((c,i)=>(
-        <div key={i} style={{background:"#111",marginTop:20,padding:12,borderRadius:16,border:"1px solid #222"}}>
-          <h3>{c.t}</h3>
-          <iframe width="100%" height="430" src={`https://www.youtube.com/embed/${id}?start=${c.start}&end=${c.end}&autoplay=0`} style={{borderRadius:12,border:"none"}} allowFullScreen></iframe>
-          <a href={`https://www.youtube.com/watch?v=${id}&t=${c.start}s`} target="_blank" style={{display:"block",marginTop:10,textAlign:"center",background:"#fff",color:"#000",padding:12,borderRadius:10,textDecoration:"none",fontWeight:"bold"}}>ABRIR CORTE REAL</a>
+        <div key={i} style={{background:"#18181b",marginTop:16,padding:16,borderRadius:16,border:"1px solid #27272a"}}>
+          <h3 style={{margin:"0 0 10px 0",fontWeight:"bold"}}>{c.t}</h3>
+          <iframe width="100%" height="400" src={`https://www.youtube.com/embed/${id}?start=${c.start}&end=${c.end}&autoplay=0`} style={{borderRadius:12,border:"none"}} allowFullScreen></iframe>
+          <a href={`https://www.youtube.com/watch?v=${id}&t=${c.start}s`} target="_blank" style={{display:"block",marginTop:10,textAlign:"center",background:"white",color:"black",padding:"12px",borderRadius:10,textDecoration:"none",fontWeight:"bold"}}>Abrir corte no YouTube - {c.start}s</a>
         </div>
       ))}
     </div>
