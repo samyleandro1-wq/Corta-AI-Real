@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
-
+1  "use client"
+2  import { useState } from "react"
+3  const EMAILS_VITALICIOS = ["samyleandro1@gmail.com"]
+4  const LINK_PAGAMENTO = "https://payment-link-v3.stone.com.br/pl_JZqWpY3oz7PaYgmf86hxb9w6LeyBKRGA"
+5  
+6  export default function Page(){
 export default function Page() {
   const [url, setUrl] = useState("");
   const [cuts, setCuts] = useState([]);
