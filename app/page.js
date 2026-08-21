@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useEFFect } from "react";
 const EMAILS_VITALICIOS = ["samyleandro1@gmail.com"]
 const LINK_PAGAMENTO = "https://payment-link-v3.stone.com.br/pl_JZqWpY3oz7PaYgmf86hxb9w6LeyBKRGA"
 export default function Page() {
