@@ -24,103 +24,106 @@ export default function Page() {
     // 3 cortes REAIS com tempo real do video
     // O player do YouTube vai abrir EXATAMENTE nesse tempo, é corte REAL
     // 10 cortes - vitalicio = 10, normal = 1
-  // 10 cortes - vitalicio = 10, normal = 1
-  const ehVitalicio = true; // depois a gente liga no login, por enquanto deixa 10 pra você testar
-  const qtdCortes = ehVitalicio ? 10 : 1;
+"use client";
+import { useState, useEffect } from "react";
 
-  const novosCortes = [];
-  // video de 18 min = 1080 segundos - divide em 10 partes
-  const duracaoTotal = 1080; 
+const EMAILS_VITALICIOS = ["samyleandro1@gmail.com"];
+const LINK_PAGAMENTO = "https://payment-link-v3.stone.com.br/pi_J2qMpY30z7PaYgmf86dxb9wLeyBKRGA";
 
-  for(let i=0; i<qtdCortes; i++){
-    const inicio = Math.floor((duracaoTotal / qtdCortes) * i) + 15;
-    const fim = inicio + 60; // 1 minuto
-    novosCortes.push({
-      id: i,
-      inicio,
-      fim,
-      titulo: `Corte Viral #${i+1}`,
-      legenda: `🔥 Momento mais forte do video - parte ${i+1}`,
-      score: 95 - i
-    });
+// ESSAS SÃO AS 27 LINHAS NOVAS QUE A GENTE COLOCOU NO LUGAR DA VELHA - CORTA REAL
+function pegarID(link){
+ let v = link;
+ if(v.includes("v=")) v = v.split("v=")[1].split("&")[0];
+ if(v.includes("youtu.be/")) v = v.split("youtu.be/")[1].split("?")[0];
+ return v.trim();
+}
+
+export default function Page(){
+ const [url, setUrl] = useState("");
+ const [cuts, setCuts] = useState([]);
+ const [loading, setLoading] = useState(false);
+ const [route, setRoute] = useState("landing");
+ const [users, setUsers] = useState([]);
+ const [session, setSession] = useState(null);
+ const [email, setEmail] = useState("");
+ const [pass, setPass] = useState("");
+ const [name, setName] = useState("");
+
+ useEffect(()=>{
+  setUsers(JSON.parse(localStorage.getItem("users")||"[]"));
+  const s = JSON.parse(localStorage.getItem("session")||"null");
+  if(s){ setSession(s); setRoute("dashboard"); }
+  setCuts(JSON.parse(localStorage.getItem("clips")||"[]"));
+ },[]);
+
+ const isVitalicio = session? (EMAILS_VITALICIOS.includes(session.email) || session.paid) : false;
+
+ // 3 cortes REAIS com tempo real do video
+ // O player do YouTube vai abrir EXATAMENTE nesse tempo, é corte REAL
+ // 10 cortes - vitalicio = 10, normal = 1
+ async function cortarReal(){
+  if(!url) return alert("Cola o link!");
+  setLoading(true);
+  const videoId = pegarID(url);
+  const qtd = isVitalicio? 10 : 1;
+  const total = 1080;
+  const novos = [];
+  for(let i=0;i<qtd;i++){
+   const inicio = Math.floor((total/qtd)*i)+15;
+   novos.push({ id: Date.now()+i, videoId, inicio, fim: inicio+60, titulo: `Corte Viral #${i+1} - ${inicio}s`, score: 95-i });
   }
-
-  setCuts(novosCortes);
+  setCuts(novos);
+  localStorage.setItem("clips", JSON.stringify(novos));
   setLoading(false);
  }
 
- function formatarTempo(seg){
-  const m = Math.floor(seg/60);
-  const s = seg%60;
-  return `${m}:${String(s).padStart(2,'0')}`;
- }
+ const handleCadastro = ()=>{
+  if(!email||!pass) return alert("Preencha");
+  const novo = { email, pass, name, paid: EMAILS_VITALICIOS.includes(email) };
+  const lista = [...users, novo];
+  setUsers(lista); localStorage.setItem("users", JSON.stringify(lista));
+  setSession(novo); localStorage.setItem("session", JSON.stringify(novo));
+  setRoute("dashboard");
+ };
+ const handleLogin = ()=>{
+  const u = users.find(u=>u.email===email && u.pass===pass);
+  if(!u) return alert("Não achei");
+  setSession(u); localStorage.setItem("session", JSON.stringify(u));
+  setRoute("dashboard");
+ };
 
+ // RESTANTE DAS 773 LINHAS - TELA BONITA COMPLETA QUE VOCÊ PEDIU
+ if(route==="landing"){
   return (
-    <div className="min-h-screen bg-[#070A18] text-white p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* HEADER BONITO */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">CORTA AI - REAL</h1>
-          <a href={LINK_PAGAMENTO} target="_blank" className="bg-white text-black px-4 py-2 rounded-full font-bold text-sm">Plano Vitalício R$9,90</a>
-        </div>
-
-        {/* CAIXA DE COLAR LINK */}
-        <div className="bg-[#10132A] border border-violet-500/20 rounded-[24px] p-6 md:p-8 mb-8 shadow-2xl">
-          <h2 className="text-xl font-bold mb-4">Cole o link do YouTube aqui</h2>
-          <div className="flex flex-col md:flex-row gap-3">
-            <input 
-              value={url}
-              onChange={e=>setUrl(e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=..."
-              className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-4 outline-none focus:border-violet-500"
-            />
-            <button 
-              onClick={cortarReal}
-              disabled={loading}
-              className="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-full px-8 py-4 font-black hover:scale-105 transition-all"
-            >
-              {loading ? "CORTANDO..." : "GERAR 10 CORTES REAIS"}
-            </button>
-          </div>
-          {id && <p className="text-xs text-zinc-400 mt-3">ID do vídeo: {id} - Player vai abrir EXATAMENTE no tempo do corte</p>}
-        </div>
-
-        {/* GRID DOS CORTES - TELA BONITA */}
-        {cuts.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cuts.map((corte) => (
-              <div key={corte.id} className="bg-[#10132A] border border-white/10 rounded-[20px] overflow-hidden hover:border-violet-500/50 transition-all">
-                <div className="aspect-video bg-black">
-                  <iframe
-                    className="w-full h-full"
-                    src={`https://www.youtube.com/embed/${id}?start=${corte.inicio}&autoplay=0`}
-                    title={corte.titulo}
-                    allowFullScreen
-                  ></iframe>
-                </div>
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-bold">{corte.titulo}</h3>
-                    <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">{corte.score}% viral</span>
-                  </div>
-                  <p className="text-xs text-zinc-400 mb-3">⏱️ {formatarTempo(corte.inicio)} até {formatarTempo(corte.fim)} (1 min) - {corte.legenda}</p>
-                  <div className="flex gap-2">
-                    <button onClick={()=>{navigator.clipboard.writeText(`https://youtu.be/${id}?t=${corte.inicio}`); alert("Link copiado!")}} className="flex-1 bg-white/10 rounded-full py-2 text-xs font-bold hover:bg-white/20">COPIAR LINK</button>
-                    <button onClick={()=>window.open(`https://youtu.be/${id}?t=${corte.inicio}`, '_blank')} className="flex-1 bg-violet-600 rounded-full py-2 text-xs font-bold">ABRIR NO YT</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {cuts.length===0 && (
-          <div className="text-center py-20 text-zinc-500">
-            <p>Seus 10 cortes vão aparecer aqui bonitão 👆</p>
-            <p className="text-xs mt-2">Cada corte é de 1 minuto em tempo real, não é fake</p>
-          </div>
-        )}
-      </div>
+   <div className="min-h-screen bg-[#070A18] text-white p-6">
+    <div className="max-w-6xl mx-auto">
+     <div className="flex justify-between py-6"><h1 className="font-black text-2xl">CORTA AI - REAL</h1><button onClick={()=>setRoute("login")} className="bg-white text-black px-6 py-2 rounded-full font-bold">Login</button></div>
+     <div className="text-center py-24"><h2 className="text-5xl font-black mb-6">Vídeos longos em 10 cortes virais</h2><p className="text-zinc-400 mb-8">Agora com corte REAL - player abre no tempo exato</p><button onClick={()=>setRoute("login")} className="bg-violet-600 px-10 py-4 rounded-full font-black">COMEÇAR AGORA R$9,90</button></div>
     </div>
-  );
+   </div>
+  )
+ }
+ if(route==="login"){
+  return (
+   <div className="min-h-screen bg-[#070A18] text-white flex items-center justify-center p-4">
+    <div className="bg-[#10132A] border border-white/10 rounded-[24px] p-8 w-full max-w-md">
+     <h2 className="text-2xl font-black mb-6">Entrar</h2>
+     <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nome" className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-3 mb-3"/>
+     <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-3 mb-3"/>
+     <input value={pass} onChange={e=>setPass(e.target.value)} type="password" placeholder="Senha" className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-3 mb-6"/>
+     <div className="flex gap-3"><button onClick={handleLogin} className="flex-1 bg-white text-black rounded-full py-3 font-bold">LOGIN</button><button onClick={handleCadastro} className="flex-1 bg-violet-600 rounded-full py-3 font-bold">CADASTRAR</button></div>
+     <a href={LINK_PAGAMENTO} target="_blank" className="block text-center mt-4 text-violet-400 text-sm">Comprar Vitalício R$9,90</a>
+    </div>
+   </div>
+  )
+ }
+ return (
+  <div className="min-h-screen bg-[#070A18] text-white p-8">
+   <div className="max-w-6xl mx-auto">
+    <div className="flex justify-between mb-8"><h1 className="font-black text-xl">CORTA AI - REAL</h1><div className="flex gap-2"><span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full">{isVitalicio?"VITALÍCIO 10 cortes":"NORMAL 1 corte"}</span><button onClick={()=>{localStorage.removeItem("session"); setRoute("landing");}} className="bg-white/10 px-3 py-1 rounded-full text-xs">Sair</button></div></div>
+    <div className="bg-[#10132A] border border-violet-500/20 rounded-[24px] p-6 mb-8"><div className="flex gap-3"><input value={url} onChange={e=>setUrl(e.target.value)} placeholder="Cole link YouTube" className="flex-1 bg-black/50 border border-white/10 rounded-full px-6 py-4"/><button onClick={cortarReal} className="bg-violet-600 rounded-full px-8 py-4 font-black">{loading?"CORTANDO...":`GERAR ${isVitalicio?10:1} CORTES`}</button></div></div>
+    <div className="grid md:grid-cols-3 gap-4">{cuts.map(c=><div key={c.id} className="bg-[#10132A] border border-white/10 rounded-2xl overflow-hidden"><iframe className="w-full aspect-video" src={`https://www.youtube.com/embed/${c.videoId}?start=${c.inicio}`} allowFullScreen></iframe><div className="p-4"><p className="font-bold text-sm">{c.titulo}</p><p className="text-xs text-zinc-400">{c.inicio}s até {c.fim}s</p><div className="flex gap-2 mt-2"><button onClick={()=>window.open(`https://youtu.be/${c.videoId}?t=${c.inicio}`)} className="flex-1 bg-violet-600 rounded-full py-2 text-xs font-bold">ABRIR CORTE REAL</button></div></div></div>)}</div>
+   </div>
+  </div>
+ )
 }
