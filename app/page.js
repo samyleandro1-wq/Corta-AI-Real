@@ -37,7 +37,7 @@ export default function Page() {
       { t: "💥 CORTE 10 - FINAL", start: 0, end: 0, isFinal: true }
     ];
 
-    const emailSalvo = localStorage.getItem("corta_user");
+   const emailSalvo = typeof window !== "undefined" ? localStorage.getItem("corta_user") : null;
     const isVitalicio = emailSalvo ? EMAILS_VITALICIOS.includes(emailSalvo) : true;
 
     if (isVitalicio) {
